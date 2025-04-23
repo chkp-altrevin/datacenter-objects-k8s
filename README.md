@@ -2,7 +2,7 @@
 Used for Kubernetes integration with the Check Point Management Platform, aka SmartConsole, SmartDasboard, CloudGuard.
 
 ## Getting started
-Assumes you already have a Check Point Management Server. The server that you will be running the provisiongin script `k8s_controller_provisioning.sh` needs to have `kubectl` installed and a kube config located in the usual paths but don't worry the script will check as well.
+Assumes you already have a Check Point Management Server. The server that you will be running `k8s_controller_provisioning.sh` requires `kubectl` to be installed and a kube config located in the usual paths but don't worry the script will check as well.
 
 - `chmod +x k8s_controller_provisioning.sh`
 
