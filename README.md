@@ -1,7 +1,9 @@
 # cgns-controller-k8s
+Used for Kubernetes integration with the Check Point Management Platform, aka SmartConsole, SmartDasboard, CloudGuard.
 
 ## Getting started
-Assumes you are running this from a server that has `kubectl` installed and a kube config located in the usual paths. Don't worry the script will check as well.
+Assumes you already have a Check Point Management Server with connectivity from the server that you will be running the provisiongin script `k8s_controller_provisioning.sh`. You need to have `kubectl` installed and a kube config located in the usual paths but don't worry the script will check as well.
+
 - `chmod +x k8s_controller_provisioning.sh`
 
 - `./k8s_controller_provisioning.sh`
