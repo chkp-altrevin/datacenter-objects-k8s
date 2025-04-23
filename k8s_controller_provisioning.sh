@@ -1,0 +1,207 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+LOG_FILE="./k8s_controller_provisioning.log"
+TOKEN_FILE="./token_file"
+SERVICE_ACCOUNT_NAME="cloudguard-controller"
+DEFAULT_NAMESPACE="default"
+
+log_info()    { echo "[INFO]    $*" | tee -a "$LOG_FILE"; }
+log_error()   { echo "[ERROR]   $*" | tee -a "$LOG_FILE" >&2; }
+log_success() { echo "[SUCCESS] $*" | tee -a "$LOG_FILE"; }
+
+print_help() {
+  cat <<EOF
+Usage: $0 [OPTIONS]
+
+Options:
+  --help                         Show this help message and exit
+  --uninstall                    Remove all created Kubernetes objects
+  --create-datacenter-object     Register the cluster in SmartConsole using the API
+
+This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
+EOF
+  exit 0
+}
+
+uninstall_resources() {
+  log_info "Removing Kubernetes objects..."
+  kubectl delete serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrole endpoint-reader --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrolebinding allow-cloudguard-access-endpoints --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrole pod-reader --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrolebinding allow-cloudguard-access-pods --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrole service-reader --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrolebinding allow-cloudguard-access-services --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrole node-reader --ignore-not-found=true 2>/dev/null
+  kubectl delete clusterrolebinding allow-cloudguard-access-nodes --ignore-not-found=true 2>/dev/null
+  kubectl delete secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 2>/dev/null
+  rm -f "$TOKEN_FILE" 2>/dev/null || true
+  log_success "Uninstallation completed."
+  exit 0
+}
+
+check_kubectl() {
+  if ! command -v kubectl &>/dev/null; then
+    log_error "kubectl is not installed."
+    read -rp "Install kubectl now? [y/N]: " reply
+    if [[ "$reply" =~ ^[Yy]$ ]]; then
+      curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      rm kubectl
+      log_success "kubectl installed."
+      echo "Exiting. Please configure a Kubernetes cluster and rerun the script."
+      exit 0
+    else
+      echo "Exiting. kubectl is required."
+      exit 1
+    fi
+  fi
+
+  if [[ ! -f "$KUBECONFIG" && ! -f "$HOME/.kube/config" && ! -d "$HOME/.kube" ]]; then
+    log_error "No kubeconfig found. Configure a Kubernetes cluster and rerun the script."
+    exit 1
+  fi
+
+  if ! kubectl config get-contexts &>/dev/null; then
+    log_error "kubectl is not configured properly. No contexts available."
+    exit 1
+  fi
+}
+
+select_kube_context() {
+  local current_context
+  current_context=$(kubectl config current-context)
+  echo "Current kubectl context: $current_context"
+  read -rp "Proceed with this context for CloudGuard provisioning? [y/N]: " proceed
+
+  if [[ "$proceed" =~ ^[Yy]$ ]]; then
+    log_success "Using context: $current_context"
+    return
+  fi
+
+  echo "Available contexts:"
+  kubectl config get-contexts --no-headers | awk '{print $1}'
+  read -rp "Enter the context to use (or press Enter to use current): " selected_context
+  selected_context="${selected_context:-$current_context}"
+
+  if ! kubectl config use-context "$selected_context" &>/dev/null; then
+    log_error "Failed to switch to context: $selected_context"
+    exit 1
+  fi
+
+  log_success "Switched to context: $selected_context"
+}
+
+provision_cloudguard() {
+  log_info "Creating CloudGuard service account and RBAC objects..."
+  kubectl create serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" || true
+  kubectl create clusterrole endpoint-reader --verb=get,list --resource=endpoints || true
+  kubectl create clusterrolebinding allow-cloudguard-access-endpoints --clusterrole=endpoint-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME || true
+  kubectl create clusterrole pod-reader --verb=get,list --resource=pods || true
+  kubectl create clusterrolebinding allow-cloudguard-access-pods --clusterrole=pod-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME || true
+  kubectl create clusterrole service-reader --verb=get,list --resource=services || true
+  kubectl create clusterrolebinding allow-cloudguard-access-services --clusterrole=service-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME || true
+  kubectl create clusterrole node-reader --verb=get,list --resource=nodes || true
+  kubectl create clusterrolebinding allow-cloudguard-access-nodes --clusterrole=node-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME || true
+  log_info "Creating service account token secret..."
+  kubectl apply -n "$DEFAULT_NAMESPACE" -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudguard-controller-secret
+  annotations:
+    kubernetes.io/service-account.name: $SERVICE_ACCOUNT_NAME
+type: kubernetes.io/service-account-token
+EOF
+  kubectl create token "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" > "$TOKEN_FILE"
+  log_success "Token saved to $TOKEN_FILE"
+}
+
+authenticate_to_smartconsole() {
+  log_info "Authenticating to SmartConsole API..."
+  local login
+  login=$(curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/login"     -H "Content-Type: application/json"     -d "{"user":"${SMARTCENTER_USER}","password":"${SMARTCENTER_PASS}"}")
+  if ! echo "$login" | jq -e '.sid' &>/dev/null; then
+    log_error "SmartConsole login failed or invalid JSON response."
+    echo "$login" >> "$LOG_FILE"
+    exit 1
+  fi
+  SID=$(echo "$login" | jq -r '.sid')
+  log_success "Authenticated with SID: $SID"
+}
+
+create_datacenter_object_via_api() {
+  authenticate_to_smartconsole
+  if [[ ! -s "$TOKEN_FILE" ]]; then
+    log_error "Token file is empty or missing."
+    exit 1
+  fi
+  local server_url
+  server_url=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
+  log_info "Creating DataCenter object in SmartConsole..."
+  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/add-data-center-object"     -H "Content-Type: application/json" -H "X-chkp-sid: $SID"     -d "{
+      "name": "CloudGuard-K8s",
+      "type": "kubernetes",
+      "server": "${server_url}",
+      "token": "$(< "$TOKEN_FILE")",
+      "comments": "Provisioned by automation script"
+    }" | tee -a "$LOG_FILE"
+  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/publish"     -H "Content-Type: application/json" -H "X-chkp-sid: $SID" -d '{}' | tee -a "$LOG_FILE"
+  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/logout"     -H "X-chkp-sid: $SID" >/dev/null
+  log_success "SmartConsole object published and session closed."
+}
+
+main() {
+  case "${1:-}" in
+    --help)
+      print_help
+      ;;
+    --uninstall)
+      uninstall_resources
+      ;;
+    --create-datacenter-object)
+      if [[ -z "${SMARTCENTER_USER:-}" || -z "${SMARTCENTER_PASS:-}" || -z "${SMARTCENTER_HOST:-}" ]]; then
+        echo
+        log_error "Missing one or more required environment variables:"
+        [[ -z "${SMARTCENTER_USER:-}" ]] && echo "  - SMARTCENTER_USER"
+        [[ -z "${SMARTCENTER_PASS:-}" ]] && echo "  - SMARTCENTER_PASS"
+        [[ -z "${SMARTCENTER_HOST:-}" ]] && echo "  - SMARTCENTER_HOST"
+        echo
+        echo "Please set them and rerun:"
+        echo "  export SMARTCENTER_USER=admin"
+        echo "  export SMARTCENTER_PASS=secret"
+        echo "  export SMARTCENTER_HOST=192.168.1.10"
+        echo
+        exit 1
+      fi
+      create_datacenter_object_via_api
+      exit 0
+      ;;
+  esac
+
+  check_kubectl
+  select_kube_context
+  provision_cloudguard
+
+  current_context=$(kubectl config current-context)
+  cluster_info=$(kubectl config view -o jsonpath="{.contexts[?(@.name==\"$current_context\")].context.cluster}")
+  cluster_server=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"$cluster_info\")].cluster.server}")
+
+  echo
+  echo "📎 Token file saved at: $TOKEN_FILE displayed below"
+  echo "================ start of token_file ================"
+  cat "$TOKEN_FILE"
+  echo ""
+  echo "================ end of token_file =================="
+  echo ""
+  echo "🧭 Using kubectl context: $current_context"
+  echo "🌐 Kubernetes API server: $cluster_server"
+  echo
+  echo "🔑 Use the token and server above in SmartConsole:"
+  echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
+  echo
+}
+
+main "$@"
+
