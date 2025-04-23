@@ -5,10 +5,11 @@ LOG_FILE="./k8s_controller_provisioning.log"
 TOKEN_FILE="./token_file"
 SERVICE_ACCOUNT_NAME="cloudguard-controller"
 DEFAULT_NAMESPACE="default"
+DRY_RUN=false
 
-log_info()    { echo "[INFO]    $*" | tee -a "$LOG_FILE"; }
-log_error()   { echo "[ERROR]   $*" | tee -a "$LOG_FILE" >&2; }
-log_success() { echo "[SUCCESS] $*" | tee -a "$LOG_FILE"; }
+log_info()    { echo -e "\033[1;34m[INFO]\033[0m    $*" | tee -a "$LOG_FILE"; }
+log_error()   { echo -e "\033[1;31m[ERROR]\033[0m   $*" | tee -a "$LOG_FILE" >&2; }
+log_success() { echo -e "\033[1;32m[SUCCESS]\033[0m $*" | tee -a "$LOG_FILE"; }
 
 print_help() {
   cat <<EOF
@@ -18,6 +19,7 @@ Options:
   --help                         Show this help message and exit
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
+  --dry-run                      Simulate actions without applying changes
 
 This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
 EOF
@@ -26,17 +28,17 @@ EOF
 
 uninstall_resources() {
   log_info "Removing Kubernetes objects..."
-  kubectl delete serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrole endpoint-reader --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrolebinding allow-cloudguard-access-endpoints --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrole pod-reader --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrolebinding allow-cloudguard-access-pods --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrole service-reader --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrolebinding allow-cloudguard-access-services --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrole node-reader --ignore-not-found=true 2>/dev/null
-  kubectl delete clusterrolebinding allow-cloudguard-access-nodes --ignore-not-found=true 2>/dev/null
-  kubectl delete secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 2>/dev/null
-  rm -f "$TOKEN_FILE" 2>/dev/null || true
+  $DRY_RUN || kubectl delete serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrole endpoint-reader --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrolebinding allow-cloudguard-access-endpoints --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrole pod-reader --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrolebinding allow-cloudguard-access-pods --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrole service-reader --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrolebinding allow-cloudguard-access-services --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrole node-reader --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete clusterrolebinding allow-cloudguard-access-nodes --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || kubectl delete secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 2>/dev/null
+  $DRY_RUN || rm -f "$TOKEN_FILE" 2>/dev/null || true
   log_success "Uninstallation completed."
   exit 0
 }
@@ -59,7 +61,7 @@ check_kubectl() {
   fi
 
   if [[ ! -f "$KUBECONFIG" && ! -f "$HOME/.kube/config" && ! -d "$HOME/.kube" ]]; then
-    log_error "No kubeconfig found. Configure a Kubernetes cluster and rerun the script."
+    log_error "No kubeconfig found. Try, kubectl cluster-info Ref: https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/. Configure a Kubernetes cluster and rerun the script."
     exit 1
   fi
 
@@ -104,6 +106,7 @@ provision_cloudguard() {
   kubectl create clusterrolebinding allow-cloudguard-access-services --clusterrole=service-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME || true
   kubectl create clusterrole node-reader --verb=get,list --resource=nodes || true
   kubectl create clusterrolebinding allow-cloudguard-access-nodes --clusterrole=node-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME || true
+
   log_info "Creating service account token secret..."
   kubectl apply -n "$DEFAULT_NAMESPACE" -f - <<EOF
 apiVersion: v1
@@ -114,6 +117,7 @@ metadata:
     kubernetes.io/service-account.name: $SERVICE_ACCOUNT_NAME
 type: kubernetes.io/service-account-token
 EOF
+
   kubectl create token "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" > "$TOKEN_FILE"
   log_success "Token saved to $TOKEN_FILE"
 }
@@ -121,7 +125,9 @@ EOF
 authenticate_to_smartconsole() {
   log_info "Authenticating to SmartConsole API..."
   local login
-  login=$(curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/login"     -H "Content-Type: application/json"     -d "{"user":"${SMARTCENTER_USER}","password":"${SMARTCENTER_PASS}"}")
+  login=$(curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/login" \
+    -H "Content-Type: application/json" \
+    -d "{\"user\":\"${SMARTCENTER_USER}\",\"password\":\"${SMARTCENTER_PASS}\"}")
   if ! echo "$login" | jq -e '.sid' &>/dev/null; then
     log_error "SmartConsole login failed or invalid JSON response."
     echo "$login" >> "$LOG_FILE"
@@ -140,19 +146,32 @@ create_datacenter_object_via_api() {
   local server_url
   server_url=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
   log_info "Creating DataCenter object in SmartConsole..."
-  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/add-data-center-object"     -H "Content-Type: application/json" -H "X-chkp-sid: $SID"     -d "{
-      "name": "CloudGuard-K8s",
-      "type": "kubernetes",
-      "server": "${server_url}",
-      "token": "$(< "$TOKEN_FILE")",
-      "comments": "Provisioned by automation script"
+  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/add-data-center-object" \
+    -H "Content-Type: application/json" -H "X-chkp-sid: $SID" \
+    -d "{
+      \"name\": \"CloudGuard-K8s\",
+      \"type\": \"kubernetes\",
+      \"server\": \"${server_url}\",
+      \"token\": \"$(< "$TOKEN_FILE")\",
+      \"comments\": \"Provisioned by automation script\"
     }" | tee -a "$LOG_FILE"
-  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/publish"     -H "Content-Type: application/json" -H "X-chkp-sid: $SID" -d '{}' | tee -a "$LOG_FILE"
-  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/logout"     -H "X-chkp-sid: $SID" >/dev/null
+  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/publish" \
+    -H "Content-Type: application/json" -H "X-chkp-sid: $SID" -d '{}' | tee -a "$LOG_FILE"
+  curl -sk -X POST "https://${SMARTCENTER_HOST}/web_api/logout" \
+    -H "X-chkp-sid: $SID" >/dev/null
   log_success "SmartConsole object published and session closed."
 }
 
 main() {
+  for arg in "$@"; do
+    case "$arg" in
+      --dry-run)
+        DRY_RUN=true
+        log_info "Dry-run mode activated. No changes will be applied."
+        ;;
+    esac
+  done
+
   case "${1:-}" in
     --help)
       print_help
@@ -168,7 +187,7 @@ main() {
         [[ -z "${SMARTCENTER_PASS:-}" ]] && echo "  - SMARTCENTER_PASS"
         [[ -z "${SMARTCENTER_HOST:-}" ]] && echo "  - SMARTCENTER_HOST"
         echo
-        echo "Please set them and rerun:"
+        echo "Please set and rerun:"
         echo "  export SMARTCENTER_USER=admin"
         echo "  export SMARTCENTER_PASS=secret"
         echo "  export SMARTCENTER_HOST=192.168.1.10"
@@ -182,7 +201,7 @@ main() {
 
   check_kubectl
   select_kube_context
-  provision_cloudguard
+  $DRY_RUN || provision_cloudguard
 
   current_context=$(kubectl config current-context)
   cluster_info=$(kubectl config view -o jsonpath="{.contexts[?(@.name==\"$current_context\")].context.cluster}")
