@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LOG_FILE="./k8s_controller_provisioning.log"
+LOG_FILE="./provisioning.log"
 TOKEN_FILE="./token_file"
 SERVICE_ACCOUNT_NAME="cloudguard-controller"
 DEFAULT_NAMESPACE="default"
