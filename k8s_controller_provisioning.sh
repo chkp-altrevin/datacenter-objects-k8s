@@ -30,6 +30,7 @@ Options:
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
   --dry-run                      Simulate actions without applying changes
+  --status                       Check if the 'cloudguard-controller-secret' exists and show details
 
 This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
 EOF
@@ -172,6 +173,18 @@ create_datacenter_object_via_api() {
   log_success "SmartConsole object published and session closed."
 }
 
+check_secret_status() {
+  log_info "Checking status of Kubernetes secret for CloudGuard..."
+
+  if kubectl get secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" &>/dev/null; then
+    log_success "Secret 'cloudguard-controller-secret' exists in namespace '$DEFAULT_NAMESPACE'."
+    kubectl describe secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" | tee -a "$LOG_FILE"
+  else
+    log_error "Secret 'cloudguard-controller-secret' not found in namespace '$DEFAULT_NAMESPACE'."
+    exit 1
+  fi
+}
+
 main() {
   if [[ $# -eq 0 ]]; then
     print_help
@@ -213,6 +226,11 @@ main() {
         exit 1
       fi
       create_datacenter_object_via_api
+      exit 0
+      ;;
+    --status)
+      check_kubectl
+      check_secret_status
       exit 0
       ;;
   esac
