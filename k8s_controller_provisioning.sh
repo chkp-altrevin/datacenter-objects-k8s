@@ -242,6 +242,10 @@ main() {
 
     echo "🧭 Using kubectl context: $current_context"
     echo "🌐 Kubernetes API server: $cluster_server"
+    echo ""
+    echo "===== ip addresses associated to host ====="
+    run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1
+    echo "==========================================="
     echo
     echo "🔑 Use the token and server above in SmartConsole:"
     echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
