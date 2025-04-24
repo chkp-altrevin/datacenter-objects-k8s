@@ -10,15 +10,22 @@ Assumes you already have a Check Point Management Server. The server that you wi
 
 - If you have any issues, check the log for clues.
 
-## Optional Flags
+## Usage | Flags
 
 ```
-Flag | Description
---deploy-cluster | Provisions a demo K3D cluster
---cluster-name <name> | (Optional) Name of the K3D cluster
---port <port> | (Optional) Kubernetes API port (default: 6550)
---install, --dry-run | Provision CloudGuard objects interactively or dry-run
---create-datacenter-object | Register to SmartConsole with API
+Usage: $0 [OPTIONS]
+
+Options:
+  --help                         Show this help message and exit
+  --install                      Install CloudGuard objects on the cluster
+  --uninstall                    Remove all created Kubernetes objects
+  --create-datacenter-object     Register the cluster in SmartConsole using the API
+  --dry-run                      Simulate actions without applying changes
+  --deploy-cluster               Install Docker and K3D, then deploy a Kubernetes cluster
+  --delete-cluster               Delete the Kubernetes cluster and 'demoapps' namespace (does not remove docker or k3d use their respective scripts or keep)
+  --status                       Show status and details of the K3D cluster
+  --cluster-name <name>          Set the K3D cluster name (default: k3d-demo-cluster)
+  --port <port>                  Set the Kubernetes API port (default: 6550)
 ```
 
 ### Importante
