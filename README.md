@@ -5,7 +5,7 @@ What is this: Quick provisioning for Kubernetes integration with the Check Point
 Assumes you already have a Check Point Management Server. The server that you will be running `k8s_controller_provisioning.sh` requires `kubectl` to be installed and a kube config located in the usual paths but don't worry the script will check as well.
 
 - `chmod +x k8s_controller_provisioning.sh`
-
+- Optional env vars you can customize located in `k8s_controller_provisioning.sh` but not required.
 - `./k8s_controller_provisioning.sh --install`
 - If you have any issues, check the log for clues.
 
