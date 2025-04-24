@@ -11,13 +11,13 @@ Assumes you already have a Check Point Management Server. The server that you wi
 
 ### Optional
 Kubernetes Cluster creation with K3D and Docker
-
+```
   --deploy-cluster               Install Docker and K3D, then deploy a Kubernetes cluster
   --delete-cluster               Delete the Kubernetes cluster and 'demoapps' namespace (does not remove docker or k3d use their respective scripts or keep)
   --status                       Show status and details of the K3D cluster
   --cluster-name <name>          Set the K3D cluster name (default: k3d-demo-cluster)
   --port <port>                  Set the Kubernetes API port (default: 6550)
-
+```
 
 ## Usage | Flags
 ```
