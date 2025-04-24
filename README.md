@@ -9,19 +9,9 @@ Assumes you already have a Check Point Management Server. The server that you wi
 - `./k8s_controller_provisioning.sh --install`
 - If you have any issues, check the log for clues.
 
-### Optional
-Kubernetes Cluster creation with K3D and Docker
-```
-  --deploy-cluster               Install Docker and K3D, then deploy a Kubernetes cluster
-  --delete-cluster               Delete the Kubernetes cluster and 'demoapps' namespace (does not remove docker or k3d use their respective scripts or keep)
-  --status                       Show status and details of the K3D cluster
-  --cluster-name <name>          Set the K3D cluster name (default: k3d-demo-cluster)
-  --port <port>                  Set the Kubernetes API port (default: 6550)
-```
-
 ## Usage | Flags
 ```
-Usage: [OPTIONS]
+Usage:  [OPTIONS]
 
 Options:
   --help                         Show this help message and exit
@@ -29,11 +19,8 @@ Options:
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
   --dry-run                      Simulate actions without applying changes
-  --deploy-cluster               Install Docker and K3D, then deploy a Kubernetes cluster
-  --delete-cluster               Delete the Kubernetes cluster and 'demoapps' namespace (does not remove docker or k3d use their respective scripts or keep)
-  --status                       Show status and details of the K3D cluster
-  --cluster-name <name>          Set the K3D cluster name (default: k3d-demo-cluster)
-  --port <port>                  Set the Kubernetes API port (default: 6550)
+
+This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
 ```
 ### Importante
 
