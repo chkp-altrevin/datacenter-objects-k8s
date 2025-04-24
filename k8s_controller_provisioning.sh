@@ -116,7 +116,7 @@ provision_cloudguard() {
   run_cmd kubectl create clusterrole node-reader --verb=get,list --resource=nodes
   run_cmd kubectl create clusterrolebinding allow-cloudguard-access-nodes --clusterrole=node-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME
 
-  log_info "Creating service account token secret..."
+  log_info "Creating service account secret..."
   if ! $DRY_RUN; then
     kubectl apply -n "$DEFAULT_NAMESPACE" -f - <<EOF
 apiVersion: v1
