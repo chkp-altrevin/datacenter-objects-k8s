@@ -13,14 +13,12 @@ Assumes you already have a Check Point Management Server. The server that you wi
 ## Optional Flags
 
 ```
-Usage: ./k8s_controller_provisioning.sh [OPTIONS]
-
-Options:
-  --help                         Show this help message and exit
-  --uninstall                    Remove all created Kubernetes objects
-  --create-datacenter-object     Register the cluster in SmartConsole using the API
-
-This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
+Flag | Description
+--deploy-cluster | Provisions a demo K3D cluster
+--cluster-name <name> | (Optional) Name of the K3D cluster
+--port <port> | (Optional) Kubernetes API port (default: 6550)
+--install, --dry-run | Provision CloudGuard objects interactively or dry-run
+--create-datacenter-object | Register to SmartConsole with API
 ```
 
 ### Importante
