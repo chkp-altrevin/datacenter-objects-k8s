@@ -19,6 +19,7 @@ Options:
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
   --dry-run                      Simulate actions without applying changes
+  --status                       Check if the 'cloudguard-controller-secret' exists and show details
 
 This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
 ```
