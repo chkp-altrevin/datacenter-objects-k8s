@@ -29,12 +29,27 @@ Usage: $0 [OPTIONS]
 Options:
   --help                         Show this help message and exit
   --install                      Install CloudGuard objects on the cluster
+    --kubeconfig=PATH              Override kubeconfig file path (default: ~/.kube/config)
+    --token-file=PATH              Override token file output location (default: ./token_file)
+    --service-account-name=NAME    Override service account name (default: cloudguard-controller-<hostname>)
+    --log-file=PATH                Override log file location (default: ./provisioning.log)
+    --namespace=NAME               Override Kubernetes namespace (default: default)
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
   --dry-run                      Simulate actions without applying changes
   --status                       Check if the 'cloudguard-controller-secret' exists and show details
 
-This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
+Description:
+  This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
+  When using --install, optional overrides can customize configuration paths and naming.
+
+Examples:
+  $0 --install --namespace=custom-namespace
+  $0 --install --kubeconfig=/path/to/kubeconfig --token-file=/tmp/token.txt
+  $0 --uninstall
+  $0 --create-datacenter-object
+  $0 --status
+
 EOF
   exit 0
 }
