@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 LOG_FILE="./provisioning.log"
 TOKEN_FILE="./token_file"
 SERVICE_ACCOUNT_NAME="cloudguard-controller"
