@@ -4,7 +4,8 @@ set -euo pipefail
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 LOG_FILE="./provisioning.log"
 TOKEN_FILE="./token_file"
-SERVICE_ACCOUNT_NAME="cloudguard-controller"
+SERVICE_ACCOUNT_NAME="${SERVICE_ACCOUNT_NAME:-cloudguard-controller-$(hostname | tr '[:upper:]' '[:lower:]' | cut -d'.' -f1)}"
+#SERVICE_ACCOUNT_NAME="cloudguard-controller"
 DEFAULT_NAMESPACE="default"
 DRY_RUN=false
 INSTALL_MODE=false
