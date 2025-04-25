@@ -13,7 +13,8 @@ Assumes you already have a Check Point Management Server. The server that you wi
 
 ## Usage | Flags
 
-```Usage:  [OPTIONS]
+```bash
+Usage:  [OPTIONS]
 
 Options:
   --help                         Show this help message and exit
@@ -34,7 +35,8 @@ k8s_controller_provisioning.sh --create-datacenter-object
 
 Ensure you have the env vars setup:
 
-```export SMARTCENTER_USER=admin
+```bash
+export SMARTCENTER_USER=admin
 export SMARTCENTER_PASS=secret
 export SMARTCENTER_HOST=192.168.1.10
 ```
