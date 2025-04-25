@@ -70,7 +70,9 @@ check_kubectl() {
     fi
   fi
 
-  if [[ ! -f "$KUBECONFIG" && ! -f "$HOME/.kube/config" && ! -d "$HOME/.kube" ]]; then
+  if [[ -f "$KUBECONFIG" || -f "$HOME/.kube/config" || -d "$HOME/.kube" ]]; then
+    log_info "Kubeconfig detected. Continuing..."
+  else
     log_error "No kubeconfig found. Configure a Kubernetes cluster and rerun the script."
     exit 1
   fi
