@@ -3,7 +3,7 @@ set -euo pipefail
 
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 LOG_FILE="./provisioning.log"
-TOKEN_FILE="./token_file"
+TOKEN_FILE_DEFAULT="./token_file"
 SERVICE_ACCOUNT_NAME="${SERVICE_ACCOUNT_NAME:-cloudguard-controller-$(hostname | tr '[:upper:]' '[:lower:]' | cut -d'.' -f1)}"
 #SERVICE_ACCOUNT_NAME="cloudguard-controller"
 DEFAULT_NAMESPACE="default"
@@ -221,7 +221,16 @@ main() {
         ;;
     esac
   done
-
+  if $INSTALL_MODE; then
+    if [[ "$TOKEN_FILE" == "$TOKEN_FILE_DEFAULT" ]]; then
+      current_context=$(kubectl config current-context 2>/dev/null || echo "unknown-context")
+      safe_context=$(echo "$current_context" | tr '[:upper:]' '[:lower:]' | tr '/ :' '__')
+      TOKEN_FILE="./${safe_context}-token_file"
+      log_info "Using token file path: $TOKEN_FILE"
+    fi
+    check_kubectl
+    select_kube_context
+    provision_cloudguard
   case "${1:-}" in
     --help)
       print_help
