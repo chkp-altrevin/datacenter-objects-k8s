@@ -74,7 +74,7 @@ check_kubectl() {
   if [[ -f "$KUBECONFIG" || -f "$HOME/.kube/config" || -d "$HOME/.kube" ]]; then
     log_info "Kubeconfig detected. Continuing..."
   else
-    log_error "No kubeconfig found. Configure a Kubernetes cluster and rerun the script."
+    log_error "No usable kubeconfig found. Run kubectl cluster-info to test. Configure a Kubernetes cluster and rerun the script."
     exit 1
   fi
 
