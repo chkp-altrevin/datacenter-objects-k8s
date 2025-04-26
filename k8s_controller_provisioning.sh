@@ -3,9 +3,8 @@ set -euo pipefail
 
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 LOG_FILE="./provisioning.log"
-TOKEN_FILE_DEFAULT="./token_file"
-SERVICE_ACCOUNT_NAME="${SERVICE_ACCOUNT_NAME:-cloudguard-controller-$(hostname | tr '[:upper:]' '[:lower:]' | cut -d'.' -f1)}"
-#SERVICE_ACCOUNT_NAME="cloudguard-controller"
+TOKEN_FILE="${TOKEN_FILE:-tokenfile-$(kubectl config current-context 2>/dev/null | tr '[:upper:]' '[:lower:]' | tr '/ :' '-')}"
+SERVICE_ACCOUNT_NAME="cloudguard-controller"
 DEFAULT_NAMESPACE="default"
 DRY_RUN=false
 INSTALL_MODE=false
@@ -29,11 +28,11 @@ Usage: $0 [OPTIONS]
 Options:
   --help                         Show this help message and exit
   --install                      Install CloudGuard objects on the cluster
-    --kubeconfig=PATH              Override kubeconfig file path (default: ~/.kube/config)
-    --token-file=PATH              Override token file output location (default: ./token_file)
+    #NOT#READY--kubeconfig=PATH              Override kubeconfig file path (default: ~/.kube/config)
+    #NOT#READY--token-file=PATH              Override token file output location (default: ./token_file)
     --service-account-name=NAME    Override service account name (default: cloudguard-controller-<hostname>)
-    --log-file=PATH                Override log file location (default: ./provisioning.log)
-    --namespace=NAME               Override Kubernetes namespace (default: default)
+    #NOT#READY--log-file=PATH                Override log file location (default: ./provisioning.log)
+    #NOT#READY--namespace=NAME               Override Kubernetes namespace (default: default)
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
   --dry-run                      Simulate actions without applying changes
@@ -44,8 +43,8 @@ Description:
   When using --install, optional overrides can customize configuration paths and naming.
 
 Examples:
-  $0 --install --namespace=custom-namespace
-  $0 --install --kubeconfig=/path/to/kubeconfig --token-file=/tmp/token.txt
+  #NOT#READY $0 --install --namespace=custom-namespace
+  #NOT#READY $0 --install --kubeconfig=/path/to/kubeconfig --token-file=/tmp/token.txt
   $0 --uninstall
   $0 --create-datacenter-object
   $0 --status
@@ -221,16 +220,7 @@ main() {
         ;;
     esac
   done
-  if $INSTALL_MODE; then
-    if [[ "$TOKEN_FILE" == "$TOKEN_FILE_DEFAULT" ]]; then
-      current_context=$(kubectl config current-context 2>/dev/null || echo "unknown-context")
-      safe_context=$(echo "$current_context" | tr '[:upper:]' '[:lower:]' | tr '/ :' '__')
-      TOKEN_FILE="./${safe_context}-token_file"
-      log_info "Using token file path: $TOKEN_FILE"
-    fi
-    check_kubectl
-    select_kube_context
-    provision_cloudguard
+
   case "${1:-}" in
     --help)
       print_help
