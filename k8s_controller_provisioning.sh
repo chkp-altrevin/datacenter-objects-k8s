@@ -203,48 +203,6 @@ check_secret_status() {
   fi
 }
 
-# K3D Cluster Management Function
-manage_k3d_cluster() {
-  local ACTION="$1"
-  local K3D_CLUSTER="k3d-demo-cluster"
-  local KUBE_CONFIG="$HOME/.kube/config"
-
-  # Check if k3d exists
-  if ! command -v k3d &>/dev/null; then
-    log_error "k3d is not installed. installing..."
-    run_cmd curl -s "https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
-  else
-    log_info "k3d binary found. Proceeding with cluster management..."
-  fi
-
-  case "$ACTION" in
-    install)
-      export K3D_FIX_DNS=1
-      log_info "Creating K3D cluster: $K3D_CLUSTER"
-      k3d cluster create "$K3D_CLUSTER" -v /dev/mapper:/dev/mapper --servers 1 --agents 3 --api-port 6550 -p "8280:80@loadbalancer" -p "8243:443@loadbalancer"
-      
-      log_info "Creating namespace 'demoapps'"
-      kubectl create namespace demoapps || log_info "Namespace 'demoapps' already exists."
-      
-      log_success "$K3D_CLUSTER created successfully."
-      log_info "Kubeconfig located at $KUBE_CONFIG"
-      ;;
-    
-    uninstall)
-      log_info "Deleting K3D cluster: $K3D_CLUSTER"
-      k3d cluster delete "$K3D_CLUSTER"
-      log_success "$K3D_CLUSTER deleted successfully."
-      ;;
-    
-    *)
-      log_error "Unknown cluster action: $ACTION"
-      print_help
-      exit 1
-      ;;
-  esac
-}
-
-
 main() {
   if [[ $# -eq 0 ]]; then
     print_help
@@ -291,14 +249,6 @@ main() {
     --status)
       check_kubectl
       check_secret_status
-      exit 0
-      ;;
-    --cluster-install)
-      manage_k3d_cluster install
-      exit 0
-      ;;
-    --cluster-uninstall)
-      manage_k3d_cluster uninstall
       exit 0
       ;;
   esac
@@ -348,4 +298,3 @@ main() {
 }
 
 main "$@"
-
