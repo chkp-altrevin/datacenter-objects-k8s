@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# set -euo pipefail
 
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 LOG_FILE="./provisioning.log"
