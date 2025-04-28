@@ -283,9 +283,9 @@ main() {
     echo "🔑 Use the token and server above in SmartConsole:"
     echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
     echo
-    echo "=== local host ip addresses ==="
+    echo "=== for reference, local host ip addresses below ==="
     run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | paste -sd' ' -
-    echo "==============================="
+    echo "===================================================="
 
     if $DRY_RUN; then
       log_info "Dry-run complete. No changes were applied."
