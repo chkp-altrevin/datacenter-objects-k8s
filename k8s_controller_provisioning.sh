@@ -211,8 +211,8 @@ manage_k3d_cluster() {
 
   # Check if k3d exists
   if ! command -v k3d &>/dev/null; then
-    log_error "k3d is not installed. Please install k3d before proceeding."
-    exit 1
+    log_error "k3d is not installed. installing..."
+    run_cmd curl -s "https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash"
   else
     log_info "k3d binary found. Proceeding with cluster management..."
   fi
