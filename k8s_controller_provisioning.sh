@@ -74,7 +74,7 @@ check_kubectl() {
     log_error "kubectl is not installed."
     read -rp "Install kubectl now? [y/N]: " reply
     if [[ "$reply" =~ ^[Yy]$ ]]; then
-      curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
       rm kubectl
       log_success "kubectl installed."
