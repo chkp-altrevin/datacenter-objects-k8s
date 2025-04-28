@@ -112,7 +112,7 @@ select_kube_context() {
 
   echo "Available contexts:"
   kubectl config get-contexts --no-headers | awk '{print $1}'
-  read -rp "Enter the context to use (or press Enter to use current): " selected_context
+  read -rp "Enter the context to use (or type q to exit. Press Enter to use * current context): " selected_context
   selected_context="${selected_context:-$current_context}"
 
   if ! kubectl config use-context "$selected_context" &>/dev/null; then
