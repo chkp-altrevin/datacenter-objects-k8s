@@ -265,7 +265,7 @@ main() {
     echo
     echo "📎 Token file saved at: $TOKEN_FILE displayed below"
     echo "================ start of token_file ================"
-    echo
+    
     if [[ -f "$TOKEN_FILE" ]]; then
       cat "$TOKEN_FILE" | tee -a "$LOG_FILE"
     else
@@ -279,9 +279,9 @@ main() {
     echo "🧭 Using kubectl context: $current_context"
     echo "🌐 Kubernetes API server: $cluster_server"
     echo ""
-    echo "===== ip addresses associated to host ====="
+    echo "=== local host ip addresses ==="
     run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1
-    echo "==========================================="
+    echo "==============================="
     echo
     echo "🔑 Use the token and server above in SmartConsole:"
     echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
