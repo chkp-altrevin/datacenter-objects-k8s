@@ -279,12 +279,14 @@ main() {
     echo "🧭 Using kubectl context: $current_context"
     echo "🌐 Kubernetes API server: $cluster_server"
     echo ""
+    echo "=========== 0.0.0.0 above, host ip addr lookup below"
+    echo "===================================================="
+    run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | paste -sd' ' -
+    echo "===================================================="
     echo
     echo "🔑 Use the token and server above in SmartConsole:"
     echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
     echo
-    echo "=== for reference, local host ip addresses below ==="
-    run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | paste -sd' ' -
     echo "===================================================="
 
     if $DRY_RUN; then
