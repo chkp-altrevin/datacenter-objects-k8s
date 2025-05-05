@@ -197,6 +197,8 @@ check_secret_status() {
   if kubectl get secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" &>/dev/null; then
     log_success "Secret 'cloudguard-controller-secret' exists in namespace '$DEFAULT_NAMESPACE'."
     kubectl describe secret cloudguard-controller-secret -n "$DEFAULT_NAMESPACE" | tee -a "$LOG_FILE"
+    echo "Kubernetes API Server:"
+    kubectl cluster-info | grep -E 'Kubernetes master|Kubernetes control plane' | awk '/http/ {print $NF}'
   else
     log_error "Secret 'cloudguard-controller-secret' not found in namespace '$DEFAULT_NAMESPACE'."
     exit 1
