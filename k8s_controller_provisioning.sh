@@ -266,7 +266,7 @@ main() {
 
     echo
     echo "📎 Token file saved at: $TOKEN_FILE displayed below"
-    echo "================ start of token_file ================"
+    echo "============== start of token_file ================"
     
     if [[ -f "$TOKEN_FILE" ]]; then
       cat "$TOKEN_FILE"
@@ -275,16 +275,15 @@ main() {
       echo "If this was a --dry-run, you can likely ignore this message." | tee -a "$LOG_FILE"
     fi
     echo
-    echo "================ end of token_file =================="
+    echo "============== end of token_file =================="
     echo ""
 
     echo "🧭 Using kubectl context: $current_context"
     echo "🌐 Kubernetes API server: $cluster_server"
     echo ""
-    echo "=========== 0.0.0.0 above, host ip addr lookup below"
-    echo "===================================================="
+    echo "==== if 0.0.0.0 above, host ip addresses below ======"
     run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | paste -sd' ' -
-    echo "===================================================="
+    echo "====================================================="
     echo
     echo "🔑 Use the token and server above in SmartConsole:"
     echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
