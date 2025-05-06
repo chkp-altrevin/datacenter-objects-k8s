@@ -269,7 +269,7 @@ main() {
     echo "================ start of token_file ================"
     
     if [[ -f "$TOKEN_FILE" ]]; then
-      cat "$TOKEN_FILE" | tee -a "$LOG_FILE"
+      cat "$TOKEN_FILE"
     else
       echo -e "\033[1;33m[WARNING]\033[0m token_file not found." | tee -a "$LOG_FILE"
       echo "If this was a --dry-run, you can likely ignore this message." | tee -a "$LOG_FILE"
