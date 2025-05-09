@@ -1,3 +1,7 @@
+[![Understanding kubernetes architecture with diagrams – Artofit](https://tse2.mm.bing.net/th?id=OIP.K4RmU1DaD50-UAueZ2CbDAHaEb\&pid=Api)](https://www.artofit.org/image-gallery/849280442234629787/understanding-kubernetes-architecture-with-diagrams/)
+
+
+
 ---
 
 # 🛡️ Datacenter Objects K8s
@@ -103,10 +107,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-## 📞 Support
-
-For issues or feature requests, please open an [issue](https://github.com/chkp-altrevin/datacenter-objects-k8s/issues) on GitHub.
-
----
-
-Feel free to customize this `README.md` further to align with your project's branding and specific requirements.
