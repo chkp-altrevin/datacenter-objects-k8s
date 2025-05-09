@@ -19,7 +19,7 @@
 
 * **Automated Provisioning**: Simplifies the onboarding process of Kubernetes clusters to CloudGuard.
 * **Customizable Configuration**: Optional environment variables allow for tailored setups.
-* **Compatibility Checks**: Ensures necessary tools like `kubectl` are installed and configured.
+* **Compatibility Checks**: Ensures necessary tools like `kubectl` `kubeconfig` are installed and configured.
 * **Logging**: Provides logs for troubleshooting and verification.
 
 ---
