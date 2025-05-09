@@ -5,7 +5,7 @@
 
 **Seamless Kubernetes Integration with Check Point CloudGuard**
 
-![CloudGuard Controller Architecture]([https://www.stackstate.com/blog/kubernetes-architecture-part-1-reasons-to-choose-kubernetes/](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Resources/Images/Images-for-CGRDG/CloudGuard_Controller_arch.png))
+![CloudGuard Controller Architecture](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Resources/Images/Images-for-CGRDG/CloudGuard_Controller_arch.png)
 
 ---
 
