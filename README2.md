@@ -1,6 +1,5 @@
 [![Understanding kubernetes architecture with diagrams – Artofit](https://tse2.mm.bing.net/th?id=OIP.K4RmU1DaD50-UAueZ2CbDAHaEb\&pid=Api)](https://www.artofit.org/image-gallery/849280442234629787/understanding-kubernetes-architecture-with-diagrams/)
 
-Certainly! Here's an enhanced and visually engaging `README.md` for your GitHub repository [chkp-altrevin/datacenter-objects-k8s](https://github.com/chkp-altrevin/datacenter-objects-k8s). This version is designed to captivate readers, provide clear guidance, and encourage contributions.
 
 ---
 
