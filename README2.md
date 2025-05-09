@@ -68,7 +68,7 @@ Before you begin, ensure you have:
 
 ## 📚 Documentation & Resources
 
-* **Official Supported Environments Kubernetes, AWS, Azure, GCP, OCI, OpenStack, VMware, ACI, etc.** Refer to the [Check Point Official Documentation](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Topics-CGRDG/Introduction.htm).
+* **Official Supported Environments** Refer to: [Check Point Official Documentation](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Topics-CGRDG/Introduction.htm).
 
 * **Controller Administration Guide using Kubernetes**
 See [Adding Kubernetes to CloudGuard Controller](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Topics-CGRDG/Supported-Data-Centers-Kubernetes.htm?tocpath=Supported%20Data%20Centers%7CCloudGuard%20Controller%20for%20Kubernetes%7C_____0#CloudGuard_Controller_for_Kubernetes).
