@@ -1,12 +1,11 @@
 
-
 ---
 
 # 🛡️ Datacenter Objects K8s
 
 **Seamless Kubernetes Integration with Check Point CloudGuard**
 
-![Kubernetes Architecture](https://www.stackstate.com/blog/kubernetes-architecture-part-1-reasons-to-choose-kubernetes/)
+![CloudGuard Controller Architecture]([https://www.stackstate.com/blog/kubernetes-architecture-part-1-reasons-to-choose-kubernetes/](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Resources/Images/Images-for-CGRDG/CloudGuard_Controller_arch.png))
 
 ---
 
@@ -69,7 +68,7 @@ Before you begin, ensure you have:
 
 ## 📚 Documentation & Resources
 
-* **Official Deployment Options**: For advanced setups using Helm or orchestrators like Rancher, refer to the [Check Point Official Documentation](https://sc1.checkpoint.com/documents/CloudGuard_Controller/1.0/Content/Topics-Controller/Introduction.htm).
+* **Official Deployment Options**: For advanced setups using Helm or orchestrators like Rancher, refer to the [Check Point Official Documentation](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Topics-CGRDG/Introduction.htm).
 
 ---
 
