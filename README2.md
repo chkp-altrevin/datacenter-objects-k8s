@@ -1,5 +1,3 @@
-[![Understanding kubernetes architecture with diagrams – Artofit](https://tse2.mm.bing.net/th?id=OIP.K4RmU1DaD50-UAueZ2CbDAHaEb\&pid=Api)](https://www.artofit.org/image-gallery/849280442234629787/understanding-kubernetes-architecture-with-diagrams/)
-
 
 
 ---
