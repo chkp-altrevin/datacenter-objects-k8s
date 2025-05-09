@@ -11,7 +11,7 @@
 
 ## 🚀 Overview
 
-**Datacenter Objects K8s** is a streamlined solution for integrating your Kubernetes clusters with the Check Point Management Server using SmartConsole, commonly known as the CloudGuard Controller. Initially developed for testing and demonstration purposes, this tool is versatile and ready for broader applications.
+**Datacenter Objects K8s** is a streamlined solution for integrating your Kubernetes clusters with the Check Point Management Server using SmartConsole, commonly referred to (within this use case) as the CloudGuard Controller. Initially developed for testing and demonstration purposes, this tool is versatile and ready for broader applications.
 
 ---
 
