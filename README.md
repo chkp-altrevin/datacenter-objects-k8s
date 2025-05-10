@@ -66,6 +66,31 @@ Before you begin, ensure you have:
 
 ---
 
+## Usage | Flags
+
+```bash
+Usage:  [OPTIONS]
+
+Options:
+  --help                         Show this help message and exit
+  --install                      Install CloudGuard objects on the cluster
+  --uninstall                    Remove all created Kubernetes objects
+  --create-datacenter-object     Register the cluster in SmartConsole using the API
+  --dry-run                      Simulate actions without applying changes
+  --status                       Check if the 'cloudguard-controller-secret' exists and show details
+
+This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
+```
+---
+
+### Important (WIP)
+
+The flag `--create-datacenter-object` is a work in progress mileage will vary
+
+k8s_controller_provisioning.sh --create-datacenter-object
+
+Ensure you have the env vars setup:
+
 ## 📚 Documentation & Resources
 
 * **Official Supported Environments** Refer to: [Check Point Official Documentation](https://sc1.checkpoint.com/documents/R81.20/WebAdminGuides/EN/CP_R81.20_CloudGuard_Controller_AdminGuide/Content/Topics-CGRDG/Introduction.htm).
@@ -114,30 +139,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 
-## Usage | Flags
-
-```bash
-Usage:  [OPTIONS]
-
-Options:
-  --help                         Show this help message and exit
-  --install                      Install CloudGuard objects on the cluster
-  --uninstall                    Remove all created Kubernetes objects
-  --create-datacenter-object     Register the cluster in SmartConsole using the API
-  --dry-run                      Simulate actions without applying changes
-  --status                       Check if the 'cloudguard-controller-secret' exists and show details
-
-This script provisions a Kubernetes cluster for integration with Check Point CloudGuard.
-```
----
-
-### Important (WIP)
-
-The flag `--create-datacenter-object` is a work in progress mileage will vary
-
-k8s_controller_provisioning.sh --create-datacenter-object
-
-Ensure you have the env vars setup:
 
 ```bash
 export SMARTCENTER_USER=admin
