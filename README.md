@@ -83,13 +83,19 @@ This script provisions a Kubernetes cluster for integration with Check Point Clo
 ```
 ---
 
-### Important (WIP)
+### Known Issues
 
 The flag `--create-datacenter-object` is a work in progress mileage will vary
 
 k8s_controller_provisioning.sh --create-datacenter-object
 
 Ensure you have the env vars setup:
+
+```bash
+export SMARTCENTER_USER=admin
+export SMARTCENTER_PASS=secret
+export SMARTCENTER_HOST=192.168.1.10
+```
 
 ## 📚 Documentation & Resources
 
@@ -137,11 +143,3 @@ Please ensure your code adheres to the existing style and includes relevant test
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
-
-
-
-```bash
-export SMARTCENTER_USER=admin
-export SMARTCENTER_PASS=secret
-export SMARTCENTER_HOST=192.168.1.10
-```
