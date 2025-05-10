@@ -240,7 +240,7 @@ main() {
         echo
         echo "Please set them and rerun:"
         echo "  export SMARTCENTER_USER=admin"
-        echo "  export SMARTCENTER_PASS=secret"
+        echo "  export SMARTCENTER_PASS=token"
         echo "  export SMARTCENTER_HOST=192.168.1.10"
         echo
         exit 1
