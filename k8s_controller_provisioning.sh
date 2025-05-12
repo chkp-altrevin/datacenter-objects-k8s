@@ -64,8 +64,8 @@ EOF
 
 uninstall_resources() {
   log_info "Removing Kubernetes objects..."
-  run_cmd kubectl delete serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" --ignore-not-found=true  | tee -a "$LOG_FILE"
-  run_cmd kubectl delete clusterrole endpoint-reader --ignore-not-found=true  | tee -a "$LOG_FILE"
+  run_cmd kubectl delete serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" --ignore-not-found=true 
+  run_cmd kubectl delete clusterrole endpoint-reader --ignore-not-found=true
   run_cmd kubectl delete clusterrolebinding allow-cloudguard-access-endpoints --ignore-not-found=true
   run_cmd kubectl delete clusterrole pod-reader --ignore-not-found=true
   run_cmd kubectl delete clusterrolebinding allow-cloudguard-access-pods --ignore-not-found=true
@@ -175,8 +175,8 @@ select_kube_context() {
 
 provision_cloudguard() {
   log_info "Creating CloudGuard service account and RBAC objects..."
-  run_cmd kubectl create serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE"  | tee -a "$LOG_FILE"
-  run_cmd kubectl create clusterrole endpoint-reader --verb=get,list --resource=endpoints  | tee -a "$LOG_FILE"
+  run_cmd kubectl create serviceaccount "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE"
+  run_cmd kubectl create clusterrole endpoint-reader --verb=get,list --resource=endpoints
   run_cmd kubectl create clusterrolebinding allow-cloudguard-access-endpoints --clusterrole=endpoint-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME
   run_cmd kubectl create clusterrole pod-reader --verb=get,list --resource=pods
   run_cmd kubectl create clusterrolebinding allow-cloudguard-access-pods --clusterrole=pod-reader --serviceaccount=$DEFAULT_NAMESPACE:$SERVICE_ACCOUNT_NAME
