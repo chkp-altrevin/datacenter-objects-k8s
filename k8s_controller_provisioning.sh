@@ -321,7 +321,7 @@ main() {
     if [[ -f "$TOKEN_FILE" ]]; then
       cat "$TOKEN_FILE"
     else
-      echo -e "\033[1;33m[WARNING]\033[0m token_file not found, if this was a --dry-run, you can likely ignore." | tee -a "$LOG_FILE"
+      echo -e "$(date '+%Y-%m-%d %H:%M:%S') \033[1;33m[WARNING]\033[0m token_file not found, if this was a --dry-run, you can likely ignore." | tee -a "$LOG_FILE"
     fi
     echo
     echo "============== end of token_file =================="
