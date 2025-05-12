@@ -9,9 +9,18 @@ DEFAULT_NAMESPACE="default"
 DRY_RUN=false
 INSTALL_MODE=false
 
-log_info()    { echo -e "\033[1;34m[INFO]\033[0m    $*" | tee -a "$LOG_FILE"; }
-log_error()   { echo -e "\033[1;31m[ERROR]\033[0m   $*" | tee -a "$LOG_FILE" >&2; }
-log_success() { echo -e "\033[1;32m[SUCCESS]\033[0m $*" | tee -a "$LOG_FILE"; }
+log_info() {
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') \033[1;34m[INFO]\033[0m    $*" | tee -a "$LOG_FILE"
+}
+
+log_error() {
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') \033[1;31m[ERROR]\033[0m   $*" | tee -a "$LOG_FILE" >&2
+}
+
+log_success() {
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') \033[1;32m[SUCCESS]\033[0m $*" | tee -a "$LOG_FILE"
+}
+
 
 run_cmd() {
   if $DRY_RUN; then
