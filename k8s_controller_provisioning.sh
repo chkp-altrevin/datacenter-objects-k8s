@@ -15,7 +15,7 @@ log_success() { echo -e "\033[1;32m[SUCCESS]\033[0m $*" | tee -a "$LOG_FILE"; }
 
 run_cmd() {
   if $DRY_RUN; then
-    echo -e "\033[1;33m[DRY-RUN]\033[0m Would run: $*" | tee -a "$LOG_FILE"
+    echo -e "\033[1;33m[DRY-RUN]\033[0m \033[1;32m[SUCCESS]\033[0m: $*" | tee -a "$LOG_FILE"
   else
     eval "$@" | tee -a "$LOG_FILE"
   fi
@@ -100,7 +100,42 @@ check_kubectl() {
 }
 
 select_kube_context() {
-  local current_context
+  local current_context selected_context
+
+  # Check if kubeconfig is usable
+  if ! kubectl config current-context &>/dev/null; then
+    log_error "No current kubectl context set."
+    local available_contexts
+    available_contexts=$(kubectl config get-contexts --no-headers 2>/dev/null | awk '{print $1}')
+
+    if [[ -z "$available_contexts" ]]; then
+      echo "No usable kubeconfig contexts found."
+      read -rp "Would you like to exit? [Y/n]: " exit_choice
+      if [[ ! "$exit_choice" =~ ^[Nn]$ ]]; then
+        echo "Exiting script."
+        exit 1
+      else
+        echo "Continuing without valid context is not supported. Please configure kubectl."
+        exit 1
+      fi
+    fi
+
+    echo "Available contexts:"
+    echo "$available_contexts"
+    read -rp "Enter the context to use (or type q to quit): " selected_context
+    if [[ "$selected_context" == "q" ]]; then
+      echo "Exiting script."
+      exit 1
+    fi
+
+    if ! kubectl config use-context "$selected_context" &>/dev/null; then
+      log_error "Failed to switch to context: $selected_context"
+      exit 1
+    fi
+    log_success "Switched to context: $selected_context"
+    return
+  fi
+
   current_context=$(kubectl config current-context)
   echo "Current kubectl context: $current_context"
   read -rp "Proceed with this context for CloudGuard provisioning? [y/N]: " proceed
@@ -115,6 +150,11 @@ select_kube_context() {
   read -rp "Enter the context to use (or type q to exit. Press Enter to use * current context): " selected_context
   selected_context="${selected_context:-$current_context}"
 
+  if [[ "$selected_context" == "q" ]]; then
+    echo "Exiting script."
+    exit 1
+  fi
+
   if ! kubectl config use-context "$selected_context" &>/dev/null; then
     log_error "Failed to switch to context: $selected_context"
     exit 1
@@ -122,6 +162,7 @@ select_kube_context() {
 
   log_success "Switched to context: $selected_context"
 }
+
 
 provision_cloudguard() {
   log_info "Creating CloudGuard service account and RBAC objects..."
@@ -149,7 +190,7 @@ EOF
     kubectl create token "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" > "$TOKEN_FILE"
     log_success "Token saved to $TOKEN_FILE"
   else
-    echo -e "\033[1;33m[DRY-RUN]\033[0m Would apply service account secret and generate token" | tee -a "$LOG_FILE"
+    echo -e "\033[1;33m[DRY-RUN]\033[0m \033[1;32m[SUCCESS]\033[0m: Would apply service account secret and generate token" | tee -a "$LOG_FILE"
   fi
 }
 
@@ -265,7 +306,7 @@ main() {
     cluster_server=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"$cluster_info\")].cluster.server}")
 
     echo
-    echo "📎 Token file saved at: $TOKEN_FILE displayed below"
+    echo "📎 Token file saved at: ./$TOKEN_FILE. Displaying below"
     echo "============== start of token_file ================"
     
     if [[ -f "$TOKEN_FILE" ]]; then
@@ -280,18 +321,18 @@ main() {
     echo "🧭 Using kubectl context: $current_context"
     echo "🌐 Kubernetes API server: $cluster_server"
     echo ""
-    echo "==== if 0.0.0.0 above, host ip addresses below ======"
-    run_cmd ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | paste -sd' ' -
-    echo "====================================================="
+    echo "===== ip addresses associated to host ============="
+    ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | paste -sd' ' -
+    echo "==================================================="
     echo
     echo "🔑 Use the token and server above in SmartConsole:"
     echo "    SmartConsole → Objects → Cloud → Datacenters → Kubernetes"
     echo
-    echo "===================================================="
+    echo "==================================================="
 
     if $DRY_RUN; then
       log_info "Dry-run complete. No changes were applied."
-      echo "Review the log file for all simulated actions: $LOG_FILE"
+      echo "Review the log file for all simulated actions. If you had errors fix those first: ./$LOG_FILE"
     fi
   else
     log_info "No valid operation was selected. Use --help for available options."
