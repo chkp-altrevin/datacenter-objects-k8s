@@ -103,7 +103,7 @@ check_kubectl() {
   fi
 
   if ! kubectl config get-contexts &>/dev/null; then
-    log_error "kubectl is not configured properly. No contexts available."
+    log_error "Kubernetes config is not configured properly. No contexts available."
     exit 1
   fi
 }
