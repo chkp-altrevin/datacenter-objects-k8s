@@ -24,7 +24,7 @@ log_success() {
 
 run_cmd() {
   if $DRY_RUN; then
-    echo -e "\033[1;33m[DRY-RUN]\033[0m \033[1;32m[SUCCESS]\033[0m: $*" | tee -a "$LOG_FILE"
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') \033[1;33m[DRY-RUN]\033[0m \033[1;32m[SUCCESS]\033[0m: $*" | tee -a "$LOG_FILE"
   else
     eval "$@" | tee -a "$LOG_FILE"
   fi
