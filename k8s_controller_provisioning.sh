@@ -271,8 +271,7 @@ main() {
     if [[ -f "$TOKEN_FILE" ]]; then
       cat "$TOKEN_FILE"
     else
-      echo -e "\033[1;33m[WARNING]\033[0m token_file not found." | tee -a "$LOG_FILE"
-      echo "If this was a --dry-run, you can likely ignore this message." | tee -a "$LOG_FILE"
+      echo -e "\033[1;33m[WARNING]\033[0m token_file not found, if this was a --dry-run, you can likely ignore." | tee -a "$LOG_FILE"
     fi
     echo
     echo "============== end of token_file =================="
@@ -295,7 +294,7 @@ main() {
       echo "Review the log file for all simulated actions: $LOG_FILE"
     fi
   else
-    log_info "No valid operation was selected. Use --install, --uninstall, or --create-datacenter-object."
+    log_info "No valid operation was selected. Use --help for available options."
     print_help
   fi
 }
