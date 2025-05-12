@@ -96,14 +96,14 @@ check_kubectl() {
   fi
 
   if [[ -f "$KUBECONFIG" || -f "$HOME/.kube/config" || -d "$HOME/.kube" ]]; then
-    log_info "Kubeconfig detected. Continuing..."
+    log_info "Kube config detected. Continuing..."
   else
-    log_error "No usable kubeconfig found. Run kubectl cluster-info to test. Configure a Kubernetes cluster and rerun the script."
+    log_error "No usable kube config found. Run kubectl cluster-info to test. Configure a Kubernetes cluster and rerun."
     exit 1
   fi
 
   if ! kubectl config get-contexts &>/dev/null; then
-    log_error "Config is not configured properly. No contexts available."
+    log_error "Kube config is not configured properly. No contexts available. Fix and rerun."
     exit 1
   fi
 }
@@ -118,13 +118,13 @@ select_kube_context() {
     available_contexts=$(kubectl config get-contexts --no-headers 2>/dev/null | awk '{print $1}')
 
     if [[ -z "$available_contexts" ]]; then
-      echo "No usable kubeconfig contexts found."
+      echo "No usable kube config contexts found."
       read -rp "Would you like to exit? [Y/n]: " exit_choice
       if [[ ! "$exit_choice" =~ ^[Nn]$ ]]; then
         echo "Exiting script."
         exit 1
       else
-        echo "Continuing without valid context is not supported. Please configure kube config."
+        echo "Continuing without a valid config is not supported. Fix and rerun."
         exit 1
       fi
     fi
