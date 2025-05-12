@@ -28,11 +28,11 @@ Usage: $0 [OPTIONS]
 Options:
   --help                         Show this help message and exit
   --install                      Install CloudGuard objects on the cluster
-    #NOT#READY--kubeconfig=PATH              Override kubeconfig file path (default: ~/.kube/config)
-    #NOT#READY--token-file=PATH              Override token file output location (default: ./token_file)
-    --service-account-name=NAME    Override service account name (default: cloudguard-controller-<hostname>)
-    #NOT#READY--log-file=PATH                Override log file location (default: ./provisioning.log)
-    #NOT#READY--namespace=NAME               Override Kubernetes namespace (default: default)
+  #NOT#READY--kubeconfig=PATH    Override kubeconfig file path (default: ~/.kube/config)
+  #NOT#READY--token-file=PATH    Override token file output location (default: ./token_file)
+  --service-account-name=NAME    Override service account name (default: cloudguard-controller-<hostname>)
+  #NOT#READY--log-file=PATH      Override log file location (default: ./provisioning.log)
+  #NOT#READY--namespace=NAME     Override Kubernetes namespace (default: default)
   --uninstall                    Remove all created Kubernetes objects
   --create-datacenter-object     Register the cluster in SmartConsole using the API
   --dry-run                      Simulate actions without applying changes
