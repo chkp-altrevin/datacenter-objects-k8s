@@ -199,7 +199,7 @@ EOF
     kubectl create token "$SERVICE_ACCOUNT_NAME" -n "$DEFAULT_NAMESPACE" > "$TOKEN_FILE"
     log_success "Token saved to $TOKEN_FILE"
   else
-    echo -e "\033[1;33m[DRY-RUN]\033[0m \033[1;32m[SUCCESS]\033[0m: Would apply service account secret and generate token" | tee -a "$LOG_FILE"
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') \033[1;33m[DRY-RUN]\033[0m \033[1;32m[SUCCESS]\033[0m: Would apply service account secret and generate token" | tee -a "$LOG_FILE"
   fi
 }
 
@@ -341,7 +341,8 @@ main() {
 
     if $DRY_RUN; then
       log_info "Dry-run complete. No changes were applied."
-      echo "Review the log file for all simulated actions. If you had errors fix those first: ./$LOG_FILE"
+      echo "Review the logs for all simulated actions. If you had errors review the logs: $LOG_FILE"
+      echo "==================================================="
     fi
   else
     log_info "No valid operation was selected. Use --help for available options."
