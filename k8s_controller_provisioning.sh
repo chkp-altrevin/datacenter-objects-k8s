@@ -103,7 +103,7 @@ check_kubectl() {
   fi
 
   if ! kubectl config get-contexts &>/dev/null; then
-    log_error "Kubernetes config is not configured properly. No contexts available."
+    log_error "Config is not configured properly. No contexts available."
     exit 1
   fi
 }
@@ -124,7 +124,7 @@ select_kube_context() {
         echo "Exiting script."
         exit 1
       else
-        echo "Continuing without valid context is not supported. Please configure kubectl."
+        echo "Continuing without valid context is not supported. Please configure kube config."
         exit 1
       fi
     fi
