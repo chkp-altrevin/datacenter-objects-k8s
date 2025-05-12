@@ -341,7 +341,7 @@ main() {
 
     if $DRY_RUN; then
       log_info "Dry-run complete. No changes were applied."
-      echo "Review the messages above, if no errors proceed with \033[1;32m[./provision.sh --install]\033[0m"
+      echo -e "Review the messages above, if no errors run \033[1;32m[./provision.sh --install]\033[0m"
       echo "==================================================="
       echo -e "If \033[1;31m[ERROR]\033[0m are listed above, review the" 
       echo -e "log file: $LOG_FILE fix, and rerun."
