@@ -113,7 +113,7 @@ select_kube_context() {
 
   # Check if kubeconfig is usable
   if ! kubectl config current-context &>/dev/null; then
-    log_error "No current kubectl context set."
+    log_error "No current kubectl context set. see: https://kubernetes.io/docs/reference/kubectl/generated/kubectl_config/kubectl_config_set-context/"
     local available_contexts
     available_contexts=$(kubectl config get-contexts --no-headers 2>/dev/null | awk '{print $1}')
 
