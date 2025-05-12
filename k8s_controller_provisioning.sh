@@ -39,7 +39,7 @@ Options:
   --install                      Install CloudGuard objects on the cluster
   #NOT#READY--kubeconfig=PATH    Override kubeconfig file path (default: ~/.kube/config)
   #NOT#READY--token-file=PATH    Override token file output location (default: ./token_file)
-  --service-account-name=NAME    Override service account name (default: cloudguard-controller-<hostname>)
+  #NOT#READY--service-account-name=NAME    Override service account name (default: cloudguard-controller-<hostname>)
   #NOT#READY--log-file=PATH      Override log file location (default: ./provisioning.log)
   #NOT#READY--namespace=NAME     Override Kubernetes namespace (default: default)
   --uninstall                    Remove all created Kubernetes objects
@@ -250,7 +250,7 @@ check_secret_status() {
     echo "Kubernetes API Server:"
     kubectl cluster-info | grep -E 'Kubernetes master|Kubernetes control plane' | awk '/http/ {print $NF}'
   else
-    log_error "Secret 'cloudguard-controller-secret' not found in namespace '$DEFAULT_NAMESPACE'."
+    log_error "Secret 'cloudguard-controller-secret' not found in namespace '$DEFAULT_NAMESPACE'. Is it installed? Use --help for more info"
     exit 1
   fi
 }
@@ -341,7 +341,7 @@ main() {
 
     if $DRY_RUN; then
       log_info "Dry-run complete. No changes were applied."
-      echo -e "Review the messages above, if no errors run \033[1;32m[./provision.sh --install]\033[0m"
+      echo -e "Review the messages above, if no errors run \033[1;32m[./k8s_controller_provisioning.sh --install]\033[0m"
       echo "==================================================="
       echo -e "If \033[1;31m[ERROR]\033[0m are listed above, review the" 
       echo -e "log file: $LOG_FILE fix, and rerun."
