@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # set -euo pipefail
 
+# Leave defaults or modify as needed
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 LOG_FILE="./provisioning.log"
 TOKEN_FILE="${TOKEN_FILE:-tokenfile-$(kubectl config current-context 2>/dev/null | tr '[:upper:]' '[:lower:]' | tr '/ :' '-')}"
