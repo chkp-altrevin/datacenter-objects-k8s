@@ -36,6 +36,13 @@ Before you begin, ensure you have:
 
 ## 🛠️ Installation & Usage
 
+**Single online installer**
+```bash
+curl -fsSL https://raw.githubusercontent.com/chkp-altrevin/datacenter-objects/k8s/main/k8s_controller_provisioning.sh -o k8s_controller_provisioning.sh -f && chmod +x k8s_controller_provisioning.sh && ./k8s_controller_provisioning.sh --install
+```
+
+**or**
+
 1. **Clone the Repository**:
 
    ```bash
